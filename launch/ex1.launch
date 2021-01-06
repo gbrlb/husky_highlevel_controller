@@ -3,10 +3,15 @@
 <!-- husky simulation with a different world -->
 <include file="$(find husky_gazebo)/launch/husky_empty_world.launch">
     <arg name="world_name" value="/usr/share/gazebo-9/worlds/robocup14_spl_field.world"/>
+    <arg name="laser_enabled" value="true"/>
 </include>
 
 <!-- teleop_twist_keyboard​ node -->
 <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop">
+</node>
+
+<!-- rviz -->
+<node pkg="rviz" type="rviz" name="rviz">
 </node>
 
 </launch>

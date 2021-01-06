@@ -1,0 +1,22 @@
+<launch>
+<!-- <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop">
+</node> -->
+
+<param name="from_launch" type="str" value="param load from launch" />
+<rosparam command="load" file="$(find husky_highlevel_controller)/config/config.yaml"/>
+
+<node pkg="husky_highlevel_controller" type="husky_highlevel_controller.py" 
+    name="husky_highlevel_controller" output="screen">
+    <param name="from_launch_node" type="str" value="param load from launch node" />
+    <!-- <rosparam command="load"
+        file="$(find husky_highlevel_controller)/config/config.yaml"/> -->
+</node>
+
+<!-- <rosparam file="$(find husky_highlevel_controller)/config/config.yaml" /> -->
+
+<!-- <node pkg="rviz" type="rviz" name="rviz">
+</node> -->
+
+
+
+</launch>

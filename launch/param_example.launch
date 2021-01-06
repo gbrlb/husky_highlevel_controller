@@ -1,0 +1,15 @@
+<launch>
+
+<!-- global parameters -->
+<param name="global_param_from_launch" type="str" value="LOAD global_param_from_launch" />
+<rosparam command="load" file="$(find husky_highlevel_controller)/config/test.yaml"/>
+
+<!-- relative parameters -->
+<node pkg="husky_highlevel_controller" type="param_example.py" 
+    name="param_example_node" output="screen">
+    <param name="reative_param_from_launch" type="str" value="LOAD reative_param_from_launch" />
+    <rosparam command="load"
+        file="$(find husky_highlevel_controller)/config/test.yaml"/>
+</node>
+
+</launch>
