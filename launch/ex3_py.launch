@@ -5,6 +5,13 @@
         file="$(find husky_highlevel_controller)/config/ex3_cfg.yaml"/>
 </node> -->
 
+<node pkg="husky_highlevel_controller" type="husky_highlevel_controller_ex3.py" 
+    name="husky_highlevel_controller" output="screen">
+    <!-- <param name="from_launch_node" type="str" value="param load from launch node" /> -->
+    <!-- <rosparam command="load"
+        file="$(find husky_highlevel_controller)/config/config.yaml"/> -->
+</node>
+
 <node pkg="rviz" type="rviz" name="rviz">
 </node>
 

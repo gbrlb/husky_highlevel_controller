@@ -1,0 +1,7 @@
+digraph G {
+"frame_a" -> "farame_b"[label="Broadcaster: /static_transform_publisher_1609966962178485051\nAverage rate: 91.922 Hz\nMost recent transform: 1609967140.303 ( -0.009 sec old)\nBuffer length: 4.961 sec\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1609967140.294"[ shape=plaintext ] ;
+ }->"frame_a";
+}
