@@ -1,0 +1,18 @@
+  <launch>
+    <node pkg="turtlesim" type="turtlesim_node" name="sim"/>
+    <node pkg="turtlesim" type="turtle_teleop_key" name="teleop" output="screen"/>
+
+
+    <node name="turtle1_tf2_broadcaster" pkg="husky_highlevel_controller" type="turtle_tf2_broadcaster.py" respawn="false" output="screen" >
+      <param name="turtle" type="string" value="turtle1" />
+    </node>
+    <node name="turtle2_tf2_broadcaster" pkg="husky_highlevel_controller" type="turtle_tf2_broadcaster.py" respawn="false" output="screen" >
+      <param name="turtle" type="string" value="turtle2" /> 
+    </node>
+
+    <node pkg="husky_highlevel_controller" type="turtle_tf2_listener.py" 
+          name="listener" output="screen"/>
+    
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find husky_highlevel_controller)/rviz/rviz_cfg_tutle.rviz" />
+
+  </launch>

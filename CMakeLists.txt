@@ -12,6 +12,9 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   visualization_msgs
   std_msgs
+  tf2
+  tf2_ros
+  turtlesim
 )
 
 ###################################
@@ -34,6 +37,9 @@ catkin_package(
     geometry_msgs
     visualization_msgs
     std_msgs
+    tf2
+    tf2_ros
+    turtlesim
 #  DEPENDS 
 )
 
