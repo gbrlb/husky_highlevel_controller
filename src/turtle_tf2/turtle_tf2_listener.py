@@ -5,7 +5,6 @@ import math
 import tf2_ros
 import geometry_msgs.msg
 import turtlesim.srv
-
 from visualization_msgs.msg import Marker
 
 rospy.loginfo('Publishing example line')
@@ -16,10 +15,50 @@ def wait_for_time():
     while rospy.Time().now().to_sec() == 1:
         pass
 
+def make_marker(marker_type=1, 
+                frame_id='world', 
+                pose=None,
+                position=None,
+                orientation=None,
+                scale=[.1, .1, .1],
+                color=[1, 1, 0, 1] # ['r','g','b','a']
+                ):
+
+    marker = Marker()
+    marker.header.frame_id = frame_id
+    marker.header.stamp = rospy.Time.now()
+    marker.ns = 'marker_%d' % marker_type
+    marker.id = 0
+    marker.type = marker_type
+    marker.action = Marker.ADD
+
+    # pose ['position','orientation']
+    if pose is not None:
+        marker.pose = pose
+
+    # marker orientaiton ['x','y','z','w']
+    if orientation is not None:
+        marker.pose.orientation = orientation
+
+    # marker position ['x','y','z']
+    if position is not None:
+        marker.pose.position = position
+
+    # maker scale Vector3 ['x','y','z']
+    marker.scale.x = scale[0]
+    marker.scale.y = scale[1]
+    marker.scale.z = scale[2]
+
+    # maker color ColorRGBA ['r','g','b','a']
+    marker.color.r = color[0]
+    marker.color.g = color[1]
+    marker.color.b = color[2]
+    marker.color.a = color[3] # Don't forget to set the alpha!
+    return marker
+
 if __name__ == '__main__':
     rospy.init_node('tf2_turtle_listener')
-
-    wait_for_time()
+    # wait_for_time()
 
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
@@ -32,37 +71,16 @@ if __name__ == '__main__':
     # Publishers
     turtle_vel = rospy.Publisher('%s/cmd_vel' % turtle_name, geometry_msgs.msg.Twist, queue_size=1)
 
+
+    # pose = geometry_msgs.msg.Pose(1, 2, 3)
+    
+
     pub_turtle_path = rospy.Publisher('~turtle_path', Marker, queue_size=10)
 
-    marker = Marker()
-    marker.header.frame_id = "world"
-    marker.type = marker.LINE_STRIP
-    marker.action = marker.ADD
-
-    # marker scale
-    marker.scale.x = 0.03
-    # marker.scale.y = 0.03
-    # marker.scale.z = 0.03
-
-    # marker color
-    marker.color.a = 1.0
-    marker.color.r = 1.0
-    marker.color.g = 1.0
-    marker.color.b = 0.0
-
-    # marker orientaiton
-    marker.pose.orientation.x = 0.0
-    marker.pose.orientation.y = 0.0
-    marker.pose.orientation.z = 0.0
-    marker.pose.orientation.w = 1.0
-
-    # marker position
-    marker.pose.position.x = 0.0
-    marker.pose.position.y = 0.0
-    marker.pose.position.z = 0.0
-
-    # marker line points
-    marker.points = []
+    marker = make_marker(Marker.LINE_STRIP,
+                         frame_id='world',
+                         scale=[0.03, 0, 0],
+                         color=[1, 1, 0, 1])
 
     rate = rospy.Rate(10.0)
     while not rospy.is_shutdown():
@@ -71,8 +89,7 @@ if __name__ == '__main__':
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
             rate.sleep()
             continue
-            
-
+        
         msg = geometry_msgs.msg.Twist()
 
         msg.angular.z = 4 * math.atan2(trans.transform.translation.y, trans.transform.translation.x)
@@ -82,7 +99,12 @@ if __name__ == '__main__':
 
         # second point
         if msg.linear.x > 0.001:
-            path = tfBuffer.lookup_transform('world', turtle_name, rospy.Time())
+            try:
+                path = tfBuffer.lookup_transform('world', turtle_name, rospy.Time())
+            except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+                rate.sleep()
+                continue
+
             marker.points.append(path.transform.translation)
             pub_turtle_path.publish(marker)
 
