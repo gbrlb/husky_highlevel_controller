@@ -8,13 +8,20 @@ from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist, Quaternion, Pose, Point, Vector3
 from visualization_msgs.msg import Marker
 
+def wait_for_time():
+    """Wait for simulated time to begin.
+    """
+    while rospy.Time().now().to_sec() == 1:
+        pass
+
 def callback(data):
+
     dist_min_index = np.argmin(data.ranges)
     dist_min = data.ranges[dist_min_index]
     angle = (360 - dist_min_index) * data.angle_increment
     angle_deg = np.rad2deg(angle)
     dist_x = np.cos(angle) * dist_min
-    dist_y = -np.sin(angle) * dist_min
+    dist_y = - np.sin(angle) * dist_min
 
     print("===============================================")
     rospy.loginfo('distancia minima index %s', dist_min_index)
@@ -24,13 +31,19 @@ def callback(data):
     rospy.loginfo('distancia y %s', dist_y)
 
     ## Marker
-    scale = Vector3(3,2,1)
     colum_pose = Pose(Point(x=dist_x, y=dist_y, z=0), Quaternion(x=0, y=0, z=0, w=1))
-    print(colum_pose)
+    # colum_maker = make_marker(marker_type=Marker.CYLINDER, 
+    #                         frame_id='/base_laser', 
+    #                         pose=colum_pose,
+    #                         scale=Vector3(x=.1, y=.1, z=.1),
+    #                         color=std_msgs.msg.ColorRGBA(r=1, g=1, b=0, a=1)):
+    # print(culum_pose)
+
     marker_colum_pub.publish(make_marker(Marker.CYLINDER, frame_id='/base_laser', pose=colum_pose, scale=[.5, .5, 1], color=[0, 1, 0, 1]))
+
     ## Controlador Proporcional
 
-    loop_rate = rospy.Rate(1000)
+    loop_rate = rospy.Rate(500)
     print("===== go to ======")
     print('linear:', dist_min)
     print('angular:', np.rad2deg(angle))
@@ -45,10 +58,11 @@ def callback(data):
         loop_rate.sleep()
     else:
         print("estoy aqui!!!")
+    
 
-    path = tfBuffer.lookup_transform('odom', 'base_link', rospy.Time())
-    marker_path.points.append(path.transform.translation)
-    maker_Husky_path_pub.publish(marker_path)
+    # path = tfBuffer.lookup_transform('base_link', 'odom', rospy.Time())
+    # marker.points.append(path.transform.translation)
+    # pub_turtle_path.publish(marker)
 
 def make_marker(marker_type=1, 
                 frame_id='world', 
@@ -91,27 +105,28 @@ def make_marker(marker_type=1,
     marker.color.a = color[3] # Don't forget to set the alpha!
     return marker
 
-
 def HuskyHighlevelController():
     rospy.Subscriber('/scan', LaserScan, callback)
     rospy.spin()
 
-
 if __name__ == '__main__':
     rospy.init_node('HuskyHighlevelController_node', anonymous=True)
+    # wait_for_time()
+
     topic = "/husky_velocity_controller/cmd_vel"
     queue_size = 10
+
     vel_publisher = rospy.Publisher(topic, Twist)
-    marker_colum_pub = rospy.Publisher('visualization_marker', Marker, queue_size=5)
+    marker_colum_pub = rospy.Publisher('visualization_marker', Marker, queue_size=10)
+    
     cmd_vel_msg = Twist()
-    kp_linear = 10
-    kp_angular = 1
+    kp_linear = 2
+    kp_angular = .5
+
 
     tfBuffer = tf2_ros.Buffer()
     listener = tf2_ros.TransformListener(tfBuffer)
+
     maker_Husky_path_pub = rospy.Publisher('Husky_path', Marker, queue_size=5)
-    marker_path = make_marker(Marker.LINE_STRIP,
-                              frame_id='odom',
-                              scale=[0.03, 0, 0],
-                              color=[1, 1, 0, 1])
+
     HuskyHighlevelController()

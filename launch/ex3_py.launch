@@ -1,22 +1,22 @@
 <launch>
-<!-- <node pkg="husky_highlevel_controller" type="husky_highlevel_controller" 
-    name="husky_highlevel_controller" output="screen">
-    <rosparam command="load"
-        file="$(find husky_highlevel_controller)/config/ex3_cfg.yaml"/>
-</node> -->
+  <!-- <node pkg="husky_highlevel_controller" type="husky_highlevel_controller" 
+      name="husky_highlevel_controller" output="screen">
+      <rosparam command="load"
+          file="$(find husky_highlevel_controller)/config/ex3_cfg.yaml"/>
+  </node> -->
 
-<node pkg="husky_highlevel_controller" type="husky_highlevel_controller_ex3.py" 
-    name="husky_highlevel_controller" output="screen">
-    <!-- <param name="from_launch_node" type="str" value="param load from launch node" /> -->
-    <!-- <rosparam command="load"
-        file="$(find husky_highlevel_controller)/config/config.yaml"/> -->
-</node>
+  <node pkg="husky_highlevel_controller" type="husky_highlevel_controller_ex3.py" 
+      name="husky_highlevel_controller" output="screen">
+  </node>
+      <!-- <param name="from_launch_node" type="str" value="param load from launch node" />
+      <rosparam command="load"
+          file="$(find husky_highlevel_controller)/config/config.yaml"/> -->
 
-<node pkg="rviz" type="rviz" name="rviz">
-</node>
+    <!-- rviz configuration -->
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find husky_highlevel_controller)/rviz/rviz_cfg_husky.rviz" />
 
-<include file="$(find husky_gazebo)/launch/husky_empty_world.launch">
-    <arg name="world_name" value="$(find husky_highlevel_controller)/worlds/singlePillar.world"/>
-    <arg name="laser_enabled" value="true"/>
-</include>
+  <include file="$(find husky_gazebo)/launch/husky_empty_world.launch">
+      <arg name="world_name" value="$(find husky_highlevel_controller)/worlds/singlePillar.world"/>
+      <arg name="laser_enabled" value="true"/>
+  </include>
 </launch>
